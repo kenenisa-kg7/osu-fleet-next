@@ -421,3 +421,59 @@ export async function completeDriverTrip(
   if (!response.ok) throw new Error(body.message || "Could not complete trip");
   return body.tripRequest as TripRequest;
 }
+
+export type Notification = {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  related_trip_request_id?: string | null;
+  related_vehicle_id?: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export async function getNotifications(): Promise<{
+  notifications: Notification[];
+  unreadCount: number;
+}> {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+
+  const response = await fetch(`${API_URL}/notifications`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) throw new Error(body.message || "Could not load notifications");
+
+  return body;
+}
+
+export async function markNotificationRead(notificationId: string) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+
+  const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) throw new Error(body.message || "Could not update notification");
+
+  return body.notification as { id: string; is_read: boolean };
+}

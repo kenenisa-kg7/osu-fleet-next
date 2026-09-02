@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { getFleetSummary, type FleetSummary } from "../../lib/api";
+import { NotificationBell } from "../../components/NotificationBell";
 
 type DashboardCardProps = {
   title: string;
@@ -96,16 +97,19 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={async () => {
-              await logout();
-              router.replace("/login");
-            }}
-            className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
-          >
-            Log out
-          </button>
+                   <div className="flex items-center gap-3">
+            <NotificationBell />
+            <button
+              type="button"
+              onClick={async () => {
+                await logout();
+                router.replace("/login");
+              }}
+              className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
+            >
+              Log out
+            </button>
+          </div>
         </header>
 
         <section className="mt-8 rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-5">
