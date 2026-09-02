@@ -195,15 +195,17 @@ export default function DashboardPage() {
             </>
           )}
 
-          {user.role === "driver" && (
+                 {user.role === "driver" && (
             <>
               <DashboardCard
                 title="Assigned trips"
                 description="View trips assigned to you and check pickup details."
+                onClick={() => router.push("/driver/trips")}
               />
               <DashboardCard
                 title="Trip progress"
                 description="Start and complete assigned trips while recording final mileage and notes."
+                onClick={() => router.push("/driver/trips")}
               />
             </>
           )}

@@ -352,3 +352,72 @@ export async function updateVehicleStatus(
   if (!response.ok) throw new Error(body.message || "Could not update vehicle");
   return body.vehicle as Vehicle;
 }
+
+export async function getDriverTripRequests() {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+  const response = await fetch(`${API_URL}/driver/trip-requests?page=1&limit=50`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  const body = await response.json();
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+  if (!response.ok) throw new Error(body.message || "Could not load assigned trips");
+  return body as { tripRequests: TripRequest[] };
+}
+
+export async function updateDriverTripStatus(
+  tripId: string,
+  status: "in_progress"
+) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+  const response = await fetch(
+    `${API_URL}/driver/trip-requests/${tripId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
+  const body = await response.json();
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+  if (!response.ok) throw new Error(body.message || "Could not update trip status");
+  return body.tripRequest as TripRequest;
+}
+
+export async function completeDriverTrip(
+  tripId: string,
+  endMileage: number,
+  completionNotes: string
+) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+  const response = await fetch(
+    `${API_URL}/driver/trip-requests/${tripId}/complete`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ endMileage, completionNotes }),
+    }
+  );
+  const body = await response.json();
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+  if (!response.ok) throw new Error(body.message || "Could not complete trip");
+  return body.tripRequest as TripRequest;
+}
