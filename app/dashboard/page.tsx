@@ -172,8 +172,13 @@ export default function DashboardPage() {
             </>
           )}
 
-          {user.role === "admin" && (
+                   {user.role === "admin" && (
             <>
+              <DashboardCard
+                title="Manage all trip requests"
+                description="Review, approve, reject, and filter every trip request in the system."
+                onClick={() => router.push("/admin/trips")}
+              />
               <DashboardCard
                 title="Vehicle management"
                 description="Manage vehicles, availability, maintenance records, and assignments."

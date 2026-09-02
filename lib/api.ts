@@ -205,3 +205,69 @@ export async function createTripRequest(input: CreateTripRequestInput) {
 
   return body.tripRequest as TripRequest;
 }
+
+export async function getAdminTripRequests(status = "") {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+
+  const query = new URLSearchParams({ page: "1", limit: "50" });
+  if (status) query.set("status", status);
+
+  const response = await fetch(
+    `${API_URL}/admin/trip-requests?${query.toString()}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    }
+  );
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) {
+    throw new Error(body.message || "Could not load trip requests");
+  }
+
+  return body;
+}
+
+export async function decideTripRequest(
+  tripId: string,
+  status: "approved" | "rejected"
+) {
+  const token = getToken();
+
+  if (!token) throw new Error("Authentication required");
+
+  const response = await fetch(
+    `${API_URL}/admin/trip-requests/${tripId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) {
+    throw new Error(body.message || "Could not update trip request");
+  }
+
+  return body.tripRequest;
+}
