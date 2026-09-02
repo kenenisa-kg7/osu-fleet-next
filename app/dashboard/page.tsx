@@ -179,9 +179,10 @@ export default function DashboardPage() {
                 description="Review, approve, reject, and filter every trip request in the system."
                 onClick={() => router.push("/admin/trips")}
               />
-              <DashboardCard
+                          <DashboardCard
                 title="Vehicle management"
                 description="Manage vehicles, availability, maintenance records, and assignments."
+                onClick={() => router.push("/admin/vehicles")}
               />
               <DashboardCard
                 title="User management"

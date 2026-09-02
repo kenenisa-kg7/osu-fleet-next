@@ -271,3 +271,84 @@ export async function decideTripRequest(
 
   return body.tripRequest;
 }
+export type Vehicle = {
+  id: string;
+  registration_number: string;
+  make: string;
+  model: string;
+  manufacture_year?: number | null;
+  capacity: number;
+  status: "available" | "assigned" | "maintenance" | "inactive";
+  created_at: string;
+  updated_at: string;
+};
+
+export async function getVehicles(status = "") {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+  const query = new URLSearchParams({ page: "1", limit: "100" });
+  if (status) query.set("status", status);
+  const response = await fetch(`${API_URL}/admin/vehicles?${query}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  const body = await response.json();
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+  if (!response.ok) throw new Error(body.message || "Could not load vehicles");
+  return body as { vehicles: Vehicle[]; pagination: { total: number } };
+}
+
+export async function createVehicle(input: {
+  registrationNumber: string;
+  make: string;
+  model: string;
+  manufactureYear?: number;
+  capacity: number;
+}) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+  const response = await fetch(`${API_URL}/admin/vehicles`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(input),
+  });
+  const body = await response.json();
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+  if (!response.ok) throw new Error(body.message || "Could not create vehicle");
+  return body.vehicle as Vehicle;
+}
+
+export async function updateVehicleStatus(
+  vehicleId: string,
+  status: "available" | "maintenance" | "inactive"
+) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+  const response = await fetch(
+    `${API_URL}/admin/vehicles/${vehicleId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
+  const body = await response.json();
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+  if (!response.ok) throw new Error(body.message || "Could not update vehicle");
+  return body.vehicle as Vehicle;
+}
