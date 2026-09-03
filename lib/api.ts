@@ -477,3 +477,133 @@ export async function markNotificationRead(notificationId: string) {
 
   return body.notification as { id: string; is_read: boolean };
 }
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "staff" | "driver";
+  is_active: boolean;
+  created_at: string;
+};
+
+export type AdminUserPage = {
+  users: AdminUser[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  filters: {
+    role: string | null;
+    search: string | null;
+  };
+};
+
+export async function getAdminUsers(params: { role?: string; search?: string } = {}) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+
+  const query = new URLSearchParams({ page: "1", limit: "50" });
+  if (params.role) query.set("role", params.role);
+  if (params.search) query.set("search", params.search);
+
+  const response = await fetch(`${API_URL}/admin/users?${query.toString()}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) throw new Error(body.message || "Could not load users");
+
+  return body as AdminUserPage;
+}
+
+export type CreateUserInput = {
+  name: string;
+  email: string;
+  password: string;
+  role: "staff" | "driver";
+};
+
+export async function createAdminUser(input: CreateUserInput) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+
+  const response = await fetch(`${API_URL}/admin/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(input),
+  });
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) throw new Error(body.message || "Could not create user");
+
+  return body.user as AdminUser;
+}
+
+export async function updateUserStatus(userId: string, isActive: boolean) {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+
+  const response = await fetch(`${API_URL}/admin/users/${userId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isActive }),
+  });
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) throw new Error(body.message || "Could not update user status");
+
+  return body.user as AdminUser;
+}
+
+export async function updateUserRole(userId: string, role: "staff" | "driver") {
+  const token = getToken();
+  if (!token) throw new Error("Authentication required");
+
+  const response = await fetch(`${API_URL}/admin/users/${userId}/role`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ role }),
+  });
+
+  const body = await response.json();
+
+  if (response.status === 401) {
+    clearToken();
+    throw new Error("Your session has expired");
+  }
+
+  if (!response.ok) throw new Error(body.message || "Could not update user role");
+
+  return body.user as AdminUser;
+}

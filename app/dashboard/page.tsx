@@ -188,10 +188,11 @@ export default function DashboardPage() {
                 description="Manage vehicles, availability, maintenance records, and assignments."
                 onClick={() => router.push("/admin/vehicles")}
               />
-              <DashboardCard
-                title="User management"
-                description="Create operational accounts and manage staff and driver access."
-              />
+             <DashboardCard
+  title="User management"
+  description="Create operational accounts and manage staff and driver access."
+  onClick={() => router.push("/admin/users")}
+/>
               <DashboardCard
                 title="Audit history"
                 description="Review administrative changes and trip status history."
