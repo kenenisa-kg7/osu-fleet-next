@@ -30,7 +30,9 @@ export function NotificationBell() {
   }
 
   useEffect(() => {
-    void loadNotifications();
+    // This effect intentionally loads notifications and starts polling.
+// eslint-disable-next-line react-hooks/set-state-in-effect
+void loadNotifications();
     const interval = setInterval(() => void loadNotifications(), 30000);
     return () => clearInterval(interval);
   }, []);
@@ -67,7 +69,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Notifications"
-        className="relative rounded-lg bg-slate-800 p-2.5 text-slate-200 hover:bg-slate-700"
+        className="relative rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-50)] p-2.5 text-[var(--color-text-secondary)] transition hover:bg-[var(--color-surface-100)] hover:text-[var(--color-text-primary)]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -83,34 +85,36 @@ export function NotificationBell() {
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-danger)] px-1 text-xs font-bold text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 z-10 mt-2 w-80 rounded-xl border border-slate-800 bg-slate-900 shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-800 p-4">
-            <p className="text-sm font-semibold text-white">Notifications</p>
+        <div className="absolute right-0 z-10 mt-2 w-80 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-0)] shadow-[var(--shadow-card-hover)]">
+          <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4">
+            <p className="text-sm font-semibold text-[var(--color-text-primary)]">Notifications</p>
             {unreadCount > 0 && (
-              <span className="text-xs text-emerald-300">{unreadCount} unread</span>
+              <span className="text-xs font-medium text-[var(--color-primary-700)]">
+                {unreadCount} unread
+              </span>
             )}
           </div>
 
           <div className="max-h-96 overflow-y-auto">
             {loading && (
-              <p className="p-4 text-sm text-slate-400">Loading...</p>
+              <p className="p-4 text-sm text-[var(--color-text-muted)]">Loading...</p>
             )}
 
             {error && (
-              <p role="alert" className="p-4 text-sm text-red-300">
+              <p role="alert" className="p-4 text-sm text-[var(--color-danger)]">
                 {error}
               </p>
             )}
 
             {!loading && notifications.length === 0 && (
-              <p className="p-4 text-sm text-slate-400">No notifications yet.</p>
+              <p className="p-4 text-sm text-[var(--color-text-muted)]">No notifications yet.</p>
             )}
 
             {notifications.map((notification) => (
@@ -118,18 +122,22 @@ export function NotificationBell() {
                 key={notification.id}
                 type="button"
                 onClick={() => !notification.is_read && handleMarkRead(notification.id)}
-                className={`block w-full border-b border-slate-800 p-4 text-left last:border-b-0 hover:bg-slate-800 ${
+                className={`block w-full border-b border-[var(--color-border)] p-4 text-left last:border-b-0 transition hover:bg-[var(--color-surface-50)] ${
                   notification.is_read ? "opacity-60" : ""
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium text-white">{notification.title}</p>
+                  <p className="text-sm font-medium text-[var(--color-text-primary)]">
+                    {notification.title}
+                  </p>
                   {!notification.is_read && (
-                    <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+                    <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--color-primary-600)]" />
                   )}
                 </div>
-                <p className="mt-1 text-sm text-slate-400">{notification.message}</p>
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+                  {notification.message}
+                </p>
+                <p className="mt-2 text-xs text-[var(--color-text-muted)]">
                   {new Date(notification.created_at).toLocaleString()}
                 </p>
               </button>

@@ -3,6 +3,64 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* ---- OSU brand tokens ---- */
+  /* Primary — sky blue, sampled directly from the OSU Alumni Portal login
+     screenshot (button fill #95DAED, hover #5CB8D4, focus tint #EAF7FC) */
+  --color-primary-50: #f0fafd;
+  --color-primary-100: #dff1f7;
+  --color-primary-200: #c5e8f2;
+  --color-primary-300: #aedfec;
+  --color-primary-400: #95daed; /* brand base — exact screenshot button color */
+  --color-primary-500: #6bc3dd;
+  --color-primary-600: #5cb8d4; /* screenshot hover/border color */
+  --color-primary-700: #3d96b3;
+  --color-primary-800: #2a7690;
+  --color-primary-900: #1a5468;
+
+  /* Text color to use ON primary-400/500 fills — primary is light, so white
+     text fails contrast. Matches the dark "Sign In" label in the screenshot. */
+  --color-on-primary: #12303d;
+
+  /* Secondary — muted gold, kept from the crest for supporting accents
+     (e.g. distinguishing central/HQ tier) — not the main UI accent */
+  --color-secondary-50: #fbf7ec;
+  --color-secondary-100: #f3e9c9;
+  --color-secondary-200: #e6d394;
+  --color-secondary-300: #d6bc66;
+  --color-secondary-400: #c4a94c;
+  --color-secondary-500: #a79241;
+  --color-secondary-600: #8f7b34;
+  --color-secondary-700: #73632a;
+  --color-secondary-800: #574b20;
+  --color-secondary-900: #3b3316;
+
+  /* Tertiary — pale cream highlight, used sparingly (e.g. badge backgrounds) */
+  --color-tertiary-100: #fffff0;
+  --color-tertiary-200: #ffffcd;
+  --color-tertiary-300: #ffffa8;
+
+  /* Neutral surface + border scale, tuned to sit alongside the greens/golds
+     rather than a cold blue-gray */
+  --color-surface-0: #ffffff;
+  --color-surface-50: #f8f9f7;
+  --color-surface-100: #f0f2ee;
+  --color-border: #e2e6df;
+  --color-border-strong: #c9d0c3;
+
+  --color-text-primary: #16211b;
+  --color-text-secondary: #4d5a52;
+  --color-text-muted: #7c8a80;
+
+  --color-danger: #b3261e;
+  --color-danger-bg: #fdeceb;
+  --color-success: #1b5740;
+  --color-success-bg: #eaf3ef;
+  --color-warning: #8f7b34;
+  --color-warning-bg: #fbf7ec;
+
+  --shadow-card: 0 1px 2px rgba(20, 65, 48, 0.04), 0 8px 24px -12px rgba(20, 65, 48, 0.12);
+  --shadow-card-hover: 0 2px 4px rgba(20, 65, 48, 0.06), 0 16px 32px -12px rgba(20, 65, 48, 0.16);
 }
 
 @theme inline {
@@ -10,17 +68,287 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --font-plex: var(--font-plex);
+
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-900: var(--color-primary-900);
+  --color-on-primary: var(--color-on-primary);
+
+  --color-secondary-50: var(--color-secondary-50);
+  --color-secondary-100: var(--color-secondary-100);
+  --color-secondary-200: var(--color-secondary-200);
+  --color-secondary-300: var(--color-secondary-300);
+  --color-secondary-400: var(--color-secondary-400);
+  --color-secondary-500: var(--color-secondary-500);
+  --color-secondary-600: var(--color-secondary-600);
+  --color-secondary-700: var(--color-secondary-700);
+  --color-secondary-800: var(--color-secondary-800);
+  --color-secondary-900: var(--color-secondary-900);
+
+  --color-tertiary-100: var(--color-tertiary-100);
+  --color-tertiary-200: var(--color-tertiary-200);
+  --color-tertiary-300: var(--color-tertiary-300);
+
+  --color-surface-0: var(--color-surface-0);
+  --color-surface-50: var(--color-surface-50);
+  --color-surface-100: var(--color-surface-100);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-danger: var(--color-danger);
+  --color-danger-bg: var(--color-danger-bg);
+  --color-success: var(--color-success);
+  --color-success-bg: var(--color-success-bg);
+  --color-warning: var(--color-warning);
+  --color-warning-bg: var(--color-warning-bg);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
+    /* Intentionally NOT flipping to a dark scheme here — the brand system
+       is a light theme by design (see the login/request screenshots).
+       Remove this override block entirely if you want to support OS-level
+       dark mode later; that would need a parallel dark token set. */
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-surface-50);
+  color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---------------------------------------------------------------------
+   Shared component classes — reusable across every page so future pages
+   don't need hardcoded hex values in className strings.
+   --------------------------------------------------------------------- */
+
+@layer components {
+  .osu-card {
+    background: var(--color-surface-0);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .osu-card-hover {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .osu-card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-border-strong);
+  }
+
+  .osu-input {
+    width: 100%;
+    border-radius: 0.65rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-0);
+    color: var(--color-text-primary);
+    padding: 0.65rem 0.85rem;
+    font-size: 0.925rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .osu-input::placeholder {
+    color: var(--color-text-muted);
+  }
+  .osu-input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px var(--color-primary-100);
+  }
+  .osu-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .osu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 0.65rem;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+  }
+  .osu-btn:active {
+    transform: translateY(1px);
+  }
+  .osu-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .osu-btn-primary {
+    background: var(--color-primary-400);
+    color: var(--color-on-primary);
+  }
+  .osu-btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-600);
+  }
+
+  .osu-btn-secondary {
+    background: var(--color-secondary-500);
+    color: #ffffff;
+  }
+  .osu-btn-secondary:hover:not(:disabled) {
+    background: var(--color-secondary-600);
+  }
+
+  .osu-btn-outline {
+    background: transparent;
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-primary);
+  }
+  .osu-btn-outline:hover:not(:disabled) {
+    background: var(--color-surface-100);
+  }
+
+  .osu-btn-ghost-primary {
+    background: transparent;
+    border: 1px solid var(--color-primary-200);
+    color: var(--color-primary-700);
+  }
+  .osu-btn-ghost-primary:hover:not(:disabled) {
+    background: var(--color-primary-50);
+  }
+
+  .osu-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+
+  .osu-badge-success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border-color: var(--color-primary-200);
+  }
+  .osu-badge-warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border-color: var(--color-secondary-200);
+  }
+  .osu-badge-danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border-color: #f3c9c6;
+  }
+  .osu-badge-neutral {
+    background: var(--color-surface-100);
+    color: var(--color-text-secondary);
+    border-color: var(--color-border);
+  }
+
+  .osu-alert-error {
+    background: var(--color-danger-bg);
+    border: 1px solid #f3c9c6;
+    color: var(--color-danger);
+    border-radius: 0.85rem;
+    padding: 0.9rem 1.1rem;
+  }
+  .osu-alert-success {
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-primary-200);
+    color: var(--color-primary-700);
+    border-radius: 0.85rem;
+    padding: 0.9rem 1.1rem;
+  }
+}
+
+@keyframes draw-route {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.route-line path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-route 1.6s ease-out 0.2s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-line path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Leaflet popup theming — restyled to the OSU forest-green/gold brand palette */
+.leaflet-popup-content-wrapper {
+  background: var(--color-surface-0);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.leaflet-popup-tip {
+  background: var(--color-surface-0);
+  border: 1px solid var(--color-border);
+}
+
+.leaflet-popup-close-button {
+  color: var(--color-text-muted) !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--color-text-primary) !important;
+}
+
+.osu-map-popup-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.osu-map-popup-line {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 2px 0;
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-surface-0) !important;
+  color: var(--color-primary-700) !important;
+  border-color: var(--color-border) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--color-surface-100) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--color-text-muted) !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-primary-600) !important;
 }

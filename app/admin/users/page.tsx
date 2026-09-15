@@ -13,6 +13,27 @@ import { useRouter } from "next/navigation";
 
 const EMPTY_FORM = { name: "", email: "", password: "", role: "staff" as "staff" | "driver" };
 
+function BackLink({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group inline-flex items-center gap-1.5 text-sm text-[var(--color-primary-700)] transition-colors hover:text-[var(--color-primary-800)]"
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        className="transition-transform duration-200 group-hover:-translate-x-0.5"
+      >
+        <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      Back to dashboard
+    </button>
+  );
+}
+
 export default function AdminUsersPage() {
   const router = useRouter();
   const { user, checkingSession } = useAuth();
@@ -41,7 +62,11 @@ export default function AdminUsersPage() {
   }
 
   useEffect(() => {
-    if (user?.role === "admin") load();
+    if (user?.role === "admin") {
+      // This effect intentionally loads users when the role filter changes.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      void load();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, roleFilter]);
 
@@ -84,34 +109,41 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-16 sm:px-10">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex items-center justify-between">
+    <main className="relative min-h-screen bg-[var(--color-surface-50)] px-6 py-10 text-[var(--color-text-primary)] sm:px-10">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-[380px] bg-[radial-gradient(70%_60%_at_15%_0%,rgba(107,195,221,0.16),transparent),radial-gradient(55%_50%_at_90%_0%,rgba(27,87,64,0.06),transparent)]"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto max-w-5xl">
+        <BackLink onClick={() => router.push("/dashboard")} />
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-emerald-300">Administration</p>
-            <h1 className="mt-1 text-3xl font-bold text-white">Users</h1>
+            <p className="text-xs font-semibold tracking-[0.2em] text-[var(--color-primary-700)] uppercase">
+              Administration
+            </p>
+            <h1 className="mt-1 text-3xl font-bold text-[var(--color-text-primary)]">Users</h1>
           </div>
-          <button
-            onClick={() => setShowForm((s) => !s)}
-            className="rounded-md bg-emerald-500 px-4 py-2 font-medium text-slate-950"
-          >
+          <button onClick={() => setShowForm((s) => !s)} className="osu-btn osu-btn-primary">
             {showForm ? "Cancel" : "+ New user"}
           </button>
         </div>
 
-        {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+        {error && (
+          <p role="alert" className="osu-alert-error mt-4 text-sm">
+            {error}
+          </p>
+        )}
 
         {showForm && (
-          <form
-            onSubmit={handleCreate}
-            className="mt-6 grid grid-cols-1 gap-3 rounded-lg border border-slate-700 bg-slate-900 p-5 sm:grid-cols-5"
-          >
+          <form onSubmit={handleCreate} className="osu-card mt-6 grid grid-cols-1 gap-3 p-5 sm:grid-cols-5">
             <input
               required
               placeholder="Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              className="osu-input"
             />
             <input
               required
@@ -119,7 +151,7 @@ export default function AdminUsersPage() {
               placeholder="Email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              className="osu-input"
             />
             <input
               required
@@ -127,21 +159,17 @@ export default function AdminUsersPage() {
               placeholder="Password (min 8 chars)"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              className="osu-input"
             />
             <select
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value as "staff" | "driver" })}
-              className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              className="osu-input"
             >
               <option value="staff">Staff</option>
               <option value="driver">Driver</option>
             </select>
-            <button
-              disabled={submitting}
-              type="submit"
-              className="rounded-md bg-emerald-500 px-4 py-2 font-medium text-slate-950 disabled:opacity-60"
-            >
+            <button disabled={submitting} type="submit" className="osu-btn osu-btn-primary">
               {submitting ? "Creating…" : "Create"}
             </button>
           </form>
@@ -151,7 +179,7 @@ export default function AdminUsersPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
+            className="osu-input w-auto text-sm"
           >
             <option value="">All roles</option>
             <option value="admin">Admin</option>
@@ -163,19 +191,16 @@ export default function AdminUsersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && load()}
-            className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white"
+            className="osu-input flex-1 text-sm"
           />
-          <button
-            onClick={load}
-            className="rounded-md border border-slate-700 px-3 py-2 text-sm text-slate-300"
-          >
+          <button onClick={load} className="osu-btn osu-btn-outline text-sm">
             Search
           </button>
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-slate-700">
+        <div className="osu-card mt-6 overflow-hidden">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-900 text-xs uppercase text-slate-400">
+            <thead className="bg-[var(--color-surface-100)] text-xs uppercase text-[var(--color-text-secondary)]">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Email</th>
@@ -187,29 +212,32 @@ export default function AdminUsersPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                  <td colSpan={5} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
                     Loading…
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                  <td colSpan={5} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
                     No users found.
                   </td>
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className="border-t border-slate-800">
-                    <td className="px-4 py-3 text-white">{u.name}</td>
-                    <td className="px-4 py-3 text-slate-300">{u.email}</td>
+                  <tr
+                    key={u.id}
+                    className="border-t border-[var(--color-border)] bg-[var(--color-surface-0)] transition-colors hover:bg-[var(--color-surface-50)]"
+                  >
+                    <td className="px-4 py-3 text-[var(--color-text-primary)]">{u.name}</td>
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">{u.email}</td>
                     <td className="px-4 py-3">
                       {u.role === "admin" ? (
-                        <span className="text-slate-400">admin</span>
+                        <span className="text-[var(--color-text-muted)]">admin</span>
                       ) : (
                         <select
                           value={u.role}
                           onChange={(e) => handleRoleChange(u, e.target.value as "staff" | "driver")}
-                          className="rounded-md border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-white"
+                          className="osu-input w-auto py-1 text-xs"
                         >
                           <option value="staff">staff</option>
                           <option value="driver">driver</option>
@@ -218,11 +246,12 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`rounded-full px-2 py-1 text-xs ${
+                        className="rounded-full px-2 py-1 text-xs"
+                        style={
                           u.is_active
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-red-500/20 text-red-300"
-                        }`}
+                            ? { backgroundColor: "var(--color-success-bg)", color: "var(--color-success)" }
+                            : { backgroundColor: "var(--color-danger-bg)", color: "var(--color-danger)" }
+                        }
                       >
                         {u.is_active ? "active" : "inactive"}
                       </span>
@@ -231,7 +260,7 @@ export default function AdminUsersPage() {
                       {u.role !== "admin" && (
                         <button
                           onClick={() => handleToggleActive(u)}
-                          className="rounded-md border border-slate-700 px-3 py-1 text-xs text-slate-300"
+                          className="rounded-md border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-primary-400)] hover:text-[var(--color-text-primary)]"
                         >
                           {u.is_active ? "Deactivate" : "Activate"}
                         </button>
